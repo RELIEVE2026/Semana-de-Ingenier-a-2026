@@ -40,6 +40,15 @@ dialog h2{font-size:20px;margin-bottom:4px}
 .p{background:var(--lima);color:var(--bg)}.s{background:var(--lila);color:var(--bg)}.c{background:transparent;color:var(--txt);border:2px solid var(--lila)!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
+.grupo{display:flex;flex-direction:column;gap:12px}
+button.btn{width:100%;border:0;cursor:pointer;font-family:inherit}
+.flecha{display:inline-block;margin-left:6px;transition:transform .2s}
+button[aria-expanded="true"] .flecha{transform:rotate(180deg)}
+.submenu{display:flex;flex-direction:column;gap:12px;padding-left:22px;animation:abre .25s ease-out}
+.submenu[hidden]{display:none}
+.sub-btn{background:var(--lila);font-size:16px;padding:14px;box-shadow:0 5px 0 var(--lima)}
+.sub-btn:hover,.sub-btn:focus-visible{background:var(--lima);box-shadow:0 2px 0 var(--lila)}
+@keyframes abre{from{opacity:0;transform:translateY(-8px)}}
 /* Redes sociales */
 .redes{display:flex;flex-direction:column;align-items:center;gap:8px;margin:0 0 10px}
 .redes p{font-size:13px;font-weight:500;color:var(--txt)}
@@ -93,18 +102,25 @@ dialog{max-height:88vh;overflow:auto}
   </nav>
 
   <nav class="links">
-    <!-- Cambia cada "#" por el link real de cada actividad -->
-    <a class="btn" href="#">Rally / equipos</a>
+    <!-- Conferencias aún no tiene link: cambia el "#" cuando lo tengas -->
+    <div class="grupo">
+      <button class="btn" id="rallyBtn" type="button" aria-expanded="false" aria-controls="rallyMenu">Rally / equipos <span class="flecha" aria-hidden="true">▾</span></button>
+      <div class="submenu" id="rallyMenu" hidden>
+        <a class="btn sub-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSeKGC0iiOtCHmIsYH75ofEdClGfWb_TLDMNw8nDdQcJ8ZhnZA/viewform" target="_blank" rel="noopener noreferrer">Registro del rally</a>
+        <!-- Cambia el "#" por el link de Equipos cuando lo tengas -->
+        <a class="btn sub-btn" href="#">Equipos</a>
+      </div>
+    </div>
     <a class="btn" href="#">Conferencias</a>
-    <a class="btn" href="#">Sigue líneas</a>
-    <a class="btn" href="#">Línea de producción</a>
-    <a class="btn" href="#">Puentes</a>
-    <a class="btn" href="#">Kahoot</a>
+    <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSe2PZ8iai1b9h54QLmNew774YSU49_C9lJ0ecVI4n_rJMxt5g/viewform" target="_blank" rel="noopener noreferrer">Sigue líneas</a>
+    <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLScjy5uBmqusD0ezaIpLMvE5xPkbbUJZIiJxfMBiV3ovPD4f9A/viewform" target="_blank" rel="noopener noreferrer">Línea de producción</a>
+    <a class="btn" href="https://docs.google.com/forms/d/1z49PP0izDFl5ElsDT_KWSIQIgdvCv6bzZDhoeofXrAc/viewform" target="_blank" rel="noopener noreferrer">Puentes</a>
+    <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLScgR9WvOCpMOcrIK2C02PCX08VkfHd5Hq41jSEyYy_S319ygA/viewform" target="_blank" rel="noopener noreferrer">Kahoot de semiconductores</a>
   </nav>
   <footer>Semana de Ingeniería 2026</footer>
 </main>
 
-  <button class="agente" id="abrirBuho" aria-label="Habla con el búho y resuelve un acertijo">
+  <button class="agente" id="abrirBuho" aria-label="Habla con Owi y resuelve un acertijo">
     <span class="burbuja">¡Hola! Soy Owi</span>
     <svg viewBox="0 0 120 120" aria-hidden="true">
       <ellipse cx="46" cy="110" rx="9" ry="4" fill="#ff8a3d"/><ellipse cx="74" cy="110" rx="9" ry="4" fill="#ff8a3d"/>
@@ -123,41 +139,47 @@ dialog{max-height:88vh;overflow:auto}
   </button>
 
 <dialog id="modal">
-  <h2>El búho pregunta</h2>
+  <h2>Owi pregunta</h2>
   <p class="num" id="num"></p>
   <p id="acertijo"></p>
   <p id="pista"></p>
   <div class="fila">
-    <button class="s" id="verPista">Ver pista</button>
-    <button class="p" id="otro">Otro acertijo</button>
+    <button class="s" id="verPista" hidden>Ver pista</button>
     <button class="c" id="cerrar">Cerrar</button>
   </div>
 </dialog>
 
 <script>
-// Las respuestas van entre paréntesis en el comentario, solo para el comité organizador.
-const acertijos = [
-  {q:"Me cruzas sin mojarte y aguanto tu peso sin ser suelo. Entre dos orillas soy el único camino. ¿Qué soy?", p:"Los ingenieros civiles me diseñan.", a:"puente"},
-  {q:"Tengo dientes pero no muerdo. Giro junto a mis hermanos para mover el mundo. ¿Qué soy?", p:"Sin mí, un reloj mecánico no funciona.", a:"engrane"},
-  {q:"Soy un camino cerrado por donde viaja la corriente. Si me abren, todo se apaga. ¿Qué soy?", p:"Lo estudian en electrónica.", a:"circuito"},
-  {q:"Trabajo sin cansarme y repito mil veces lo mismo sin quejarme. Con mi brazo de metal armo autos. ¿Qué soy?", p:"Un brazo mecánico es uno de mis tipos.", a:"robot"},
-  {q:"Cada quien hace una parte y yo llevo el producto de mano en mano hasta que queda terminado. ¿Qué soy?", p:"Henry Ford me hizo famosa.", a:"línea de producción"},
-  {q:"Tengo teclas con números y no soy un teléfono. Calculo sin cabeza y sumo sin dedos. ¿Qué soy?", p:"Nunca falta en un examen de cálculo.", a:"calculadora"}
-];
+/* ===== ACERTIJO DEL DÍA =====
+   Cada día cambia solo estas tres líneas y vuelve a subir el archivo.
+   Si no quieres pista, deja PISTA vacía: ""   Si no hay acertijo, deja ACERTIJO vacío: "" */
+const DIA = "Lunes";
+const ACERTIJO = "Tengo dientes pero no muerdo. Giro junto a mis hermanos para mover el mundo. ¿Dónde me encuentras?";
+const PISTA = "";
+/* ============================ */
+
 const $ = id => document.getElementById(id);
-let i = -1, orden = [];
-function siguiente(){
-  if(!orden.length){ orden = acertijos.map((_,k)=>k).sort(()=>Math.random()-.5); }
-  i = orden.pop();
-  $('num').textContent = "Acertijo " + (i+1) + " de " + acertijos.length;
-  $('acertijo').textContent = acertijos[i].q;
+$('abrirBuho').onclick = () => {
+  if (ACERTIJO.trim()) {
+    $('num').textContent = DIA ? "Acertijo del " + DIA : "Acertijo de hoy";
+    $('acertijo').textContent = ACERTIJO;
+  } else {
+    $('num').textContent = "";
+    $('acertijo').textContent = "Todavía no hay acertijo. ¡Vuelve más tarde!";
+  }
   $('pista').textContent = "";
-}
-$('abrirBuho').onclick = () => { siguiente(); $('modal').showModal(); };
-$('otro').onclick = siguiente;
-$('verPista').onclick = () => { $('pista').textContent = "Pista: " + acertijos[i].p; };
+  $('verPista').hidden = !(ACERTIJO.trim() && PISTA.trim());
+  $('modal').showModal();
+};
+$('verPista').onclick = () => { $('pista').textContent = "Pista: " + PISTA; };
 $('cerrar').onclick = () => $('modal').close();
-$('modal').addEventListener('click', e => { if(e.target === $('modal')) $('modal').close(); });
+$('modal').addEventListener('click', e => { if (e.target === $('modal')) $('modal').close(); });
+
+$('rallyBtn').onclick = () => {
+  const menu = $('rallyMenu'), abierto = menu.hidden;
+  menu.hidden = !abierto;
+  $('rallyBtn').setAttribute('aria-expanded', abierto);
+};
 </script>
 </body>
 </html>
