@@ -48,6 +48,9 @@ button[aria-expanded="true"] .flecha{transform:rotate(180deg)}
 .submenu[hidden]{display:none}
 .sub-btn{background:var(--lila);font-size:16px;padding:14px;box-shadow:0 5px 0 var(--lima)}
 .sub-btn:hover,.sub-btn:focus-visible{background:var(--lima);box-shadow:0 2px 0 var(--lila)}
+.sub-btn small{display:block;font-size:12px;font-weight:600;margin-top:2px}
+.sub-btn.cerrado{background:#8f82b8;color:#2d2540;box-shadow:0 5px 0 #5b4d82;cursor:not-allowed}
+.sub-btn.cerrado:hover,.sub-btn.cerrado:focus-visible{background:#8f82b8;transform:none;box-shadow:0 5px 0 #5b4d82}
 @keyframes abre{from{opacity:0;transform:translateY(-8px)}}
 /* Redes sociales */
 .redes{display:flex;flex-direction:column;align-items:center;gap:8px;margin:0 0 10px}
@@ -137,9 +140,9 @@ dialog{max-height:88vh;overflow:auto}
     <div class="grupo">
       <button class="btn" id="rallyBtn" type="button" aria-expanded="false" aria-controls="rallyMenu">Rally / equipos <span class="flecha" aria-hidden="true">▾</span></button>
       <div class="submenu" id="rallyMenu" hidden>
-        <a class="btn sub-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSeKGC0iiOtCHmIsYH75ofEdClGfWb_TLDMNw8nDdQcJ8ZhnZA/viewform" target="_blank" rel="noopener noreferrer">Registro del rally</a>
-        <!-- Cambia el "#" por el link de Equipos cuando lo tengas -->
-        <a class="btn sub-btn" href="#">Equipos</a>
+        <!-- Registro lleno. Para reabrirlo: quita la palabra "cerrado" de class, el aria-disabled y la línea <small> -->
+        <a class="btn sub-btn cerrado" aria-disabled="true" href="https://docs.google.com/forms/d/e/1FAIpQLSeKGC0iiOtCHmIsYH75ofEdClGfWb_TLDMNw8nDdQcJ8ZhnZA/viewform" target="_blank" rel="noopener noreferrer">Registro del rally<small>Ya se llenó el registro, no se puede</small></a>
+        <a class="btn sub-btn" href="https://script.google.com/macros/s/AKfycbwDUvihSGhy7adwIfbVVloAzDmsNjz2I-iVQF5Wn3vaPxy_SDXOaM8cPNsJxCzNjb7SVQ/exec" target="_blank" rel="noopener noreferrer">Equipos</a>
       </div>
     </div>
     <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSe2PZ8iai1b9h54QLmNew774YSU49_C9lJ0ecVI4n_rJMxt5g/viewform" target="_blank" rel="noopener noreferrer">Sigue líneas</a>
@@ -183,8 +186,8 @@ dialog{max-height:88vh;overflow:auto}
 /* ===== ACERTIJO DEL DÍA =====
    Cada día cambia solo estas tres líneas y vuelve a subir el archivo.
    Si no quieres pista, deja PISTA vacía: ""   Si no hay acertijo, deja ACERTIJO vacío: "" */
-const DIA = "Lunes";
-const ACERTIJO = "proximamente estara el acertijo";
+const DIA = "Miercoles";
+const ACERTIJO = "";
 const PISTA = "";
 /* ============================ */
 
@@ -210,6 +213,7 @@ $('rallyBtn').onclick = () => {
   menu.hidden = !abierto;
   $('rallyBtn').setAttribute('aria-expanded', abierto);
 };
+document.querySelectorAll('.cerrado').forEach(a => a.addEventListener('click', e => e.preventDefault()));
 </script>
 </body>
 </html>
