@@ -56,6 +56,7 @@ button[aria-expanded="true"] .flecha{transform:rotate(180deg)}
 .tab[aria-selected="true"]{background:var(--lima);color:var(--bg);border-color:var(--lima)}
 #textos p{font-size:17px;line-height:1.5;margin-bottom:12px;white-space:pre-line}
 .pista-titulo{font-size:13px;font-weight:700;color:var(--lima);text-transform:uppercase;letter-spacing:.6px;margin:6px 0 8px}
+.previo{font-size:24px;font-weight:800;color:var(--lima);line-height:1.2;margin:4px 0 12px}
 @keyframes abre{from{opacity:0;transform:translateY(-8px)}}
 /* Redes sociales */
 .redes{display:flex;flex-direction:column;align-items:center;gap:8px;margin:0 0 10px}
@@ -159,7 +160,7 @@ dialog{max-height:88vh;overflow:auto}
   <footer>Semana de Ingeniería 2026</footer>
 </main>
 
-  <button class="agente" id="abrirBuho" aria-label="Habla con Owi y resuelve un acertijo">
+  <button class="agente" id="abrirBuho" aria-label="Habla con Owi">
     <span class="burbuja">¡Hola! Soy Owi</span>
     <svg viewBox="0 0 120 120" aria-hidden="true">
       <ellipse cx="46" cy="110" rx="9" ry="4" fill="#ff8a3d"/><ellipse cx="74" cy="110" rx="9" ry="4" fill="#ff8a3d"/>
@@ -178,7 +179,7 @@ dialog{max-height:88vh;overflow:auto}
   </button>
 
 <dialog id="modal">
-  <h2>Owi pregunta</h2>
+  <h2>Owi dice</h2>
   <div class="tabs" id="tabs" role="tablist"></div>
   <div id="textos"></div>
   <div class="fila">
@@ -194,7 +195,7 @@ dialog{max-height:88vh;overflow:auto}
 const ACERTIJOS = [
   {
     titulo: "Acertijo 1",
-    publicado: true,
+    publicado: false,
     pistas: [
       {
         titulo: "Pista 1",
@@ -218,7 +219,7 @@ const ACERTIJOS = [
   },
   {
     titulo: "Acertijo 2",
-    publicado: true,
+    publicado: false,
     pistas: [
       {
         titulo: "",
@@ -232,6 +233,13 @@ const ACERTIJOS = [
 ];
 /* ====================== */
 
+/* Mensaje de Owi (sale mientras no haya acertijos publicados; ahora no hay) */
+const MENSAJE_PREVIO = [
+  "¡Prepárense para el rally!",
+  "Viernes 9 de octubre, de 9:00 a. m. a 1:00 p. m.",
+  "¡Los esperamos, vayan con muchas ganas!"
+];
+
 const $ = id => document.getElementById(id);
 const visibles = () => ACERTIJOS.filter(a => a.publicado);
 
@@ -241,7 +249,7 @@ function mostrar(i) {
   $('tabs').textContent = '';
   $('textos').textContent = '';
   if (!a) {
-    $('textos').append(Object.assign(document.createElement('p'), { textContent: 'Todavía no hay acertijo. ¡Vuelve más tarde!' }));
+    MENSAJE_PREVIO.forEach((t, k) => $('textos').append(Object.assign(document.createElement(k === 0 ? 'h3' : 'p'), { textContent: t, className: k === 0 ? 'previo' : '' })));
     return;
   }
   if (lista.length > 1) {
