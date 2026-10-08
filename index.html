@@ -55,10 +55,7 @@ button[aria-expanded="true"] .flecha{transform:rotate(180deg)}
 .tab{flex:1;border:2px solid var(--lila);background:transparent;color:var(--txt);border-radius:999px;padding:9px;font-weight:700;font-size:14px;cursor:pointer}
 .tab[aria-selected="true"]{background:var(--lima);color:var(--bg);border-color:var(--lima)}
 #textos p{font-size:17px;line-height:1.5;margin-bottom:12px;white-space:pre-line}
-.coords{display:flex;flex-direction:column;gap:8px;margin:4px 0 14px}
-.coords a{display:block;background:rgba(0,0,0,.25);border-radius:14px;padding:10px 12px;color:var(--lima);text-decoration:none;font-weight:700;font-size:14px}
-.coords a small{display:block;color:var(--lila);font-size:11px;font-weight:500;margin-bottom:2px}
-.coords a:hover,.coords a:focus-visible{background:rgba(0,0,0,.4);outline:none}
+.pista-titulo{font-size:13px;font-weight:700;color:var(--lima);text-transform:uppercase;letter-spacing:.6px;margin:6px 0 8px}
 @keyframes abre{from{opacity:0;transform:translateY(-8px)}}
 /* Redes sociales */
 .redes{display:flex;flex-direction:column;align-items:center;gap:8px;margin:0 0 10px}
@@ -180,62 +177,68 @@ dialog{max-height:88vh;overflow:auto}
   </button>
 
 <dialog id="modal">
-  <h2>Owi Te desea suerte</h2>
+  <h2>Owi Te Desea suerte</h2>
   <div class="tabs" id="tabs" role="tablist"></div>
   <div id="textos"></div>
-  <div class="coords" id="coords"></div>
-  <p id="pista"></p>
   <div class="fila">
-    <button class="s" id="verPista" hidden>Ver pista</button>
     <button class="c" id="cerrar">Cerrar</button>
   </div>
 </dialog>
 
 <script>
 /* ===== ACERTIJOS =====
-   Cambia publicado a false para esconder un acertijo, o a true para mostrarlo.
-   Cada texto de la lista es un párrafo. "pista" es opcional ("" = sin pista). */
+   publicado: false  -> esconde todo el acertijo (y su pestaña).
+   publicada: false  -> esconde solo esa pista dentro del acertijo.
+   Cada texto de la lista es un párrafo. */
 const ACERTIJOS = [
   {
     titulo: "Acertijo 1",
-    publicado: false,
-    textos: [
-      "En los confines del campus, donde el tiempo se detuvo y el mantenimiento olvidó llegar.",
-      "Un espacio de gloria pasada, sepultado en el olvido y cubierto por la huella del tiempo, sincronizado en el mapa con el dominio donde la ciencia se pone a prueba.",
-      "Avanza por los distintos niveles de la masa inerte, allá donde la multitud solía reunirse a contemplar el vacío."
-    ],
-    coords: [],
-    pista: ""
+    publicado: true,
+    pistas: [
+      {
+        titulo: "Pista 1",
+        publicada: true,
+        textos: [
+          "Tu travesía comienza en el gran acceso principal.",
+          "Avanza hacia el norte dejando los pasos atrás y cruza el pequeño puente sobre tu camino.",
+          "Sigue la ruta hasta llegar al fondo donde el deporte y la ciencia se encuentran.",
+          "Dirígete a la zona de pasión y aliento, donde el rumor del juego aún resuena en las alturas.",
+          "Allí, justo en el segundo escalón donde apunta el ojo que todo lo ve, encontrarás la llave que abre el cofre del tesoro."
+        ]
+      },
+      {
+        titulo: "Pista 2",
+        publicada: false,   // cámbialo a true para que también salga en esta página
+        textos: [
+          "Ya tienes la llave. Encuentra el verdadero tesoro acercándote al titán amarillo... la equis indica el lugar."
+        ]
+      }
+    ]
   },
   {
     titulo: "Acertijo 2",
-    publicado: false,
-    textos: [
-      "Pon atención y usa tu intuición,\ntres apoyos sostienen la ecuación,\nun sabio amigo te dará la resolución."
-    ],
-    coords: [
-      {texto:`27°04'26.09"N 109°25'41.33"W`, mapa:"27.073914,-109.428147"},
-      {texto:`27°04'27.88"N 109°25'40.27"W`, mapa:"27.074411,-109.427853"},
-      {texto:`27°04'27.87"N 109°25'42.66"W`, mapa:"27.074408,-109.428517"}
-    ],
-    pista: ""
+    publicado: true,
+    pistas: [
+      {
+        titulo: "",
+        publicada: true,
+        textos: [
+          "Donde la universidad comienza, y el conocimiento tiene su lugar, sube un poco la mirada y a un guardián encontrarás."
+        ]
+      }
+    ]
   }
 ];
 /* ====================== */
 
 const $ = id => document.getElementById(id);
-let actual = 0;
 const visibles = () => ACERTIJOS.filter(a => a.publicado);
 
 function mostrar(i) {
   const lista = visibles();
-  actual = i;
   const a = lista[i];
   $('tabs').textContent = '';
   $('textos').textContent = '';
-  $('coords').textContent = '';
-  $('pista').textContent = '';
-  $('verPista').hidden = true;
   if (!a) {
     $('textos').append(Object.assign(document.createElement('p'), { textContent: 'Todavía no hay acertijo. ¡Vuelve más tarde!' }));
     return;
@@ -249,19 +252,12 @@ function mostrar(i) {
       $('tabs').append(b);
     });
   }
-  a.textos.forEach(t => $('textos').append(Object.assign(document.createElement('p'), { textContent: t })));
-  a.coords.forEach((c, k) => {
-    const l = document.createElement('a');
-    l.href = 'https://www.google.com/maps/search/?api=1&query=' + c.mapa;
-    l.target = '_blank'; l.rel = 'noopener noreferrer';
-    const s = document.createElement('small'); s.textContent = 'Coordenada ' + (k + 1);
-    l.append(s, c.texto);
-    $('coords').append(l);
+  a.pistas.filter(p => p.publicada).forEach(p => {
+    if (p.titulo) $('textos').append(Object.assign(document.createElement('h3'), { textContent: p.titulo, className: 'pista-titulo' }));
+    p.textos.forEach(t => $('textos').append(Object.assign(document.createElement('p'), { textContent: t })));
   });
-  $('verPista').hidden = !(a.pista && a.pista.trim());
 }
 $('abrirBuho').onclick = () => { mostrar(0); $('modal').showModal(); };
-$('verPista').onclick = () => { $('pista').textContent = 'Pista: ' + visibles()[actual].pista; };
 $('cerrar').onclick = () => $('modal').close();
 $('modal').addEventListener('click', e => { if (e.target === $('modal')) $('modal').close(); });
 
